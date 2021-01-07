@@ -26,15 +26,15 @@ public class EnemyController : MonoBehaviour
 
 		//creating input fuzzy variables
 		FuzzyVariable hearing = new FuzzyVariable("hearing", 0.0, 360.0);
-		hearing.Terms.Add(new FuzzyTerm("south", new TriangularMembershipFunction(0.0, 0.0, 25.0)));
-		hearing.Terms.Add(new FuzzyTerm("south", new TriangularMembershipFunction(335.0, 360.0, 360.0)));
-		hearing.Terms.Add(new FuzzyTerm("south-west", new TriangularMembershipFunction(0.0, 45.0, 95.0)));
-		hearing.Terms.Add(new FuzzyTerm("west", new TriangularMembershipFunction(40.0, 90.0, 140.0)));
-		hearing.Terms.Add(new FuzzyTerm("north-west", new TriangularMembershipFunction(85.0, 135.0, 185.0)));
-		hearing.Terms.Add(new FuzzyTerm("north", new TriangularMembershipFunction(130.0, 180.0, 230.0)));
-		hearing.Terms.Add(new FuzzyTerm("north-east", new TriangularMembershipFunction(175.0, 225.0, 275.0)));
-		hearing.Terms.Add(new FuzzyTerm("east", new TriangularMembershipFunction(220.0, 270.0, 320.0)));
-		hearing.Terms.Add(new FuzzyTerm("south-east", new TriangularMembershipFunction(265.0, 315.0, 360.0)));
+		hearing.Terms.Add(new FuzzyTerm("south", new TriangularMembershipFunction(0.0, 0.0, 30.0)));
+		hearing.Terms.Add(new FuzzyTerm("south2", new TriangularMembershipFunction(330.0, 360.0, 360.0)));
+		hearing.Terms.Add(new FuzzyTerm("south-west", new TriangularMembershipFunction(15.0, 45.0, 75.0)));
+		hearing.Terms.Add(new FuzzyTerm("west", new TriangularMembershipFunction(60.0, 90.0, 120.0)));
+		hearing.Terms.Add(new FuzzyTerm("north-west", new TriangularMembershipFunction(105.0, 135.0, 165.0)));
+		hearing.Terms.Add(new FuzzyTerm("north", new TriangularMembershipFunction(150.0, 180.0, 210.0)));
+		hearing.Terms.Add(new FuzzyTerm("north-east", new TriangularMembershipFunction(195.0, 225.0, 255.0)));
+		hearing.Terms.Add(new FuzzyTerm("east", new TriangularMembershipFunction(240.0, 270.0, 300.0)));
+		hearing.Terms.Add(new FuzzyTerm("south-east", new TriangularMembershipFunction(285.0, 315.0, 345.0)));
 		fuzzy.Input.Add(hearing);
 	
 
@@ -56,6 +56,7 @@ public class EnemyController : MonoBehaviour
 		try
 		{
 			MamdaniFuzzyRule rule1 = fuzzy.ParseRule("if (hearing is south) then moveDirection is S");
+			MamdaniFuzzyRule rule12 = fuzzy.ParseRule("if (hearing is south2) then moveDirection is S");
 			MamdaniFuzzyRule rule2 = fuzzy.ParseRule("if (hearing is south-west) then moveDirection is SW");
 			MamdaniFuzzyRule rule3 = fuzzy.ParseRule("if (hearing is west) then moveDirection is W");
 			MamdaniFuzzyRule rule4 = fuzzy.ParseRule("if (hearing is north-west) then moveDirection is NW");
@@ -65,6 +66,7 @@ public class EnemyController : MonoBehaviour
 			MamdaniFuzzyRule rule8 = fuzzy.ParseRule("if (hearing is south-east) then moveDirection is SE");
 
 			fuzzy.Rules.Add(rule1);
+			fuzzy.Rules.Add(rule12);
 			fuzzy.Rules.Add(rule2);
 			fuzzy.Rules.Add(rule3);
 			fuzzy.Rules.Add(rule4);
