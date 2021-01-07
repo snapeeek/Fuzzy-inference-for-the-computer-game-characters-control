@@ -26,8 +26,8 @@ public class EnemyController : MonoBehaviour
 
 		//creating input fuzzy variables
 		FuzzyVariable hearing = new FuzzyVariable("hearing", 0.0, 360.0);
-		hearing.Terms.Add(new FuzzyTerm("south", new TriangularMembershipFunction(0.0, 0.0, 50.0)));
-		hearing.Terms.Add(new FuzzyTerm("south", new TriangularMembershipFunction(310.0, 360.0, 360.0)));
+		hearing.Terms.Add(new FuzzyTerm("south", new TriangularMembershipFunction(0.0, 0.0, 25.0)));
+		hearing.Terms.Add(new FuzzyTerm("south", new TriangularMembershipFunction(335.0, 360.0, 360.0)));
 		hearing.Terms.Add(new FuzzyTerm("south-west", new TriangularMembershipFunction(0.0, 45.0, 95.0)));
 		hearing.Terms.Add(new FuzzyTerm("west", new TriangularMembershipFunction(40.0, 90.0, 140.0)));
 		hearing.Terms.Add(new FuzzyTerm("north-west", new TriangularMembershipFunction(85.0, 135.0, 185.0)));
@@ -40,7 +40,7 @@ public class EnemyController : MonoBehaviour
 
 
 		//creating output variables
-		FuzzyVariable outputDir = new FuzzyVariable("direction", 0.0, 8.0);
+		FuzzyVariable outputDir = new FuzzyVariable("moveDirection", 0.0, 8.0);
 		outputDir.Terms.Add(new FuzzyTerm("S", new TriangularMembershipFunction(0.0, 0.5, 1.0)));
 		outputDir.Terms.Add(new FuzzyTerm("SW", new TriangularMembershipFunction(1.0, 1.5, 2.0)));
 		outputDir.Terms.Add(new FuzzyTerm("W", new TriangularMembershipFunction(2.0, 2.5, 3.0)));
@@ -55,14 +55,14 @@ public class EnemyController : MonoBehaviour
 		//creating fuzzy rules
 		try
 		{
-			MamdaniFuzzyRule rule1 = fuzzy.ParseRule("if (hearing is south) then direction is S");
-			MamdaniFuzzyRule rule2 = fuzzy.ParseRule("if (hearing is south-west) then direction is SW");
-			MamdaniFuzzyRule rule3 = fuzzy.ParseRule("if (hearing is west) then direction is W");
-			MamdaniFuzzyRule rule4 = fuzzy.ParseRule("if (hearing is north-west) then direction is NW");
-			MamdaniFuzzyRule rule5 = fuzzy.ParseRule("if (hearing is north) then direction is N");
-			MamdaniFuzzyRule rule6 = fuzzy.ParseRule("if (hearing is north-east) then direction is NE");
-			MamdaniFuzzyRule rule7 = fuzzy.ParseRule("if (hearing is east) then direction is E");
-			MamdaniFuzzyRule rule8 = fuzzy.ParseRule("if (hearing is south-east) then direction is SE");
+			MamdaniFuzzyRule rule1 = fuzzy.ParseRule("if (hearing is south) then moveDirection is S");
+			MamdaniFuzzyRule rule2 = fuzzy.ParseRule("if (hearing is south-west) then moveDirection is SW");
+			MamdaniFuzzyRule rule3 = fuzzy.ParseRule("if (hearing is west) then moveDirection is W");
+			MamdaniFuzzyRule rule4 = fuzzy.ParseRule("if (hearing is north-west) then moveDirection is NW");
+			MamdaniFuzzyRule rule5 = fuzzy.ParseRule("if (hearing is north) then moveDirection is N");
+			MamdaniFuzzyRule rule6 = fuzzy.ParseRule("if (hearing is north-east) then moveDirection is NE");
+			MamdaniFuzzyRule rule7 = fuzzy.ParseRule("if (hearing is east) then moveDirection is E");
+			MamdaniFuzzyRule rule8 = fuzzy.ParseRule("if (hearing is south-east) then moveDirection is SE");
 
 			fuzzy.Rules.Add(rule1);
 			fuzzy.Rules.Add(rule2);
@@ -128,7 +128,7 @@ public class EnemyController : MonoBehaviour
 			if (isPlayerMoving)
 			{
 				FuzzyVariable hearing = fuzzy.InputByName("hearing");
-				FuzzyVariable direction = fuzzy.OutputByName("direction");
+				FuzzyVariable moveDirection = fuzzy.OutputByName("moveDirection");
 
 				Debug.Log("Hearing: " + hearing);
 
@@ -140,43 +140,43 @@ public class EnemyController : MonoBehaviour
 
 				Dictionary<FuzzyVariable, double> result = fuzzy.Calculate(input);
 
-				Debug.Log(result[direction]);
-				if (result[direction] > 0 && result[direction] < 1)
+				Debug.Log(result[moveDirection]);
+				if (result[moveDirection] > 0 && result[moveDirection] < 1)
 				{
 					movement.x = 0;
 					movement.y = -1;
 				}
-				else if (result[direction] > 1 && result[direction] < 2)
+				else if (result[moveDirection] > 1 && result[moveDirection] < 2)
 				{
 					movement.x = -1;
 					movement.y = -1;
 				}
-				else if (result[direction] > 2 && result[direction] < 3)
+				else if (result[moveDirection] > 2 && result[moveDirection] < 3)
 				{
 					movement.x = -1;
 					movement.y = 0;
 				}
-				else if (result[direction] > 3 && result[direction] < 4)
+				else if (result[moveDirection] > 3 && result[moveDirection] < 4)
 				{
 					movement.x = -1;
 					movement.y = 1;
 				}
-				else if (result[direction] > 4 && result[direction] < 5)
+				else if (result[moveDirection] > 4 && result[moveDirection] < 5)
 				{
 					movement.x = 0;
 					movement.y = 1;
 				}
-				else if (result[direction] > 5 && result[direction] < 6)
+				else if (result[moveDirection] > 5 && result[moveDirection] < 6)
 				{
 					movement.x = 1;
 					movement.y = 1;
 				}
-				else if (result[direction] > 6 && result[direction] < 7)
+				else if (result[moveDirection] > 6 && result[moveDirection] < 7)
 				{
 					movement.x = 1;
 					movement.y = 0;
 				}
-				else if (result[direction] > 7 && result[direction] < 8)
+				else if (result[moveDirection] > 7 && result[moveDirection] < 8)
 				{
 					movement.x = 1;
 					movement.y = -1;
