@@ -109,6 +109,11 @@ public class EnemyController : MonoBehaviour
 		wallOrientation.Terms.Add(new FuzzyTerm("vertical", new TriangularMembershipFunction(1.0, 1.5, 2.0)));
 		obstacleFuzzy.Input.Add(wallOrientation);
 
+		FuzzyVariable closerVertex = new FuzzyVariable("closerVertex", 0.0, 2.0);
+		closerVertex.Terms.Add(new FuzzyTerm("vertex1", new TriangularMembershipFunction(0.0, 0.5, 1.0)));
+		closerVertex.Terms.Add(new FuzzyTerm("vertex2", new TriangularMembershipFunction(1.0, 1.5, 2.0)));
+		obstacleFuzzy.Input.Add(closerVertex);
+
 		obstacleFuzzy.Output.Add(outputDir);
 
 		try
@@ -139,6 +144,32 @@ public class EnemyController : MonoBehaviour
 			MamdaniFuzzyRule rule16 = obstacleFuzzy.ParseRule(
 				"if (hearingOutput is SE) and (obstacleDistance is close) and wallOrientation is vertical then moveDirection is S");
 
+			MamdaniFuzzyRule rule17 = obstacleFuzzy.ParseRule(
+				"if (hearingOutput is S or hearingOutput is N) and (obstacleDistance is close) and closerVertex is vertex1 then moveDirection is W");
+			MamdaniFuzzyRule rule18 = obstacleFuzzy.ParseRule(
+				"if (hearingOutput is S or hearingOutput is N) and (obstacleDistance is close) and closerVertex is vertex2 then moveDirection is E");
+			MamdaniFuzzyRule rule19 = obstacleFuzzy.ParseRule(
+				"if (hearingOutput is W or hearingOutput is E) and (obstacleDistance is close) and closerVertex is vertex1 then moveDirection is N");
+			MamdaniFuzzyRule rule20 = obstacleFuzzy.ParseRule(
+				"if (hearingOutput is W or hearingOutput is E) and (obstacleDistance is close) and closerVertex is vertex2 then moveDirection is S");
+
+			MamdaniFuzzyRule rule21 = obstacleFuzzy.ParseRule(
+				"if (hearingOutput is S) and (obstacleDistance is medium) and closerVertex is vertex1 then moveDirection is SW");
+			MamdaniFuzzyRule rule22 = obstacleFuzzy.ParseRule(
+				"if (hearingOutput is S or hearingOutput is E) and (obstacleDistance is medium) and closerVertex is vertex2 then moveDirection is SE");
+
+			MamdaniFuzzyRule rule23 = obstacleFuzzy.ParseRule(
+				"if (hearingOutput is N or hearingOutput is W) and(obstacleDistance is medium) and closerVertex is vertex1 then moveDirection is NW");
+			MamdaniFuzzyRule rule24 = obstacleFuzzy.ParseRule(
+				"if (hearingOutput is N) and (obstacleDistance is medium) and closerVertex is vertex2 then moveDirection is NE");
+
+			MamdaniFuzzyRule rule25 = obstacleFuzzy.ParseRule(
+				"if (hearingOutput is E) and(obstacleDistance is medium) and closerVertex is vertex1 then moveDirection is NE");
+
+			MamdaniFuzzyRule rule26 = obstacleFuzzy.ParseRule(
+				"if (hearingOutput is W) and(obstacleDistance is medium) and closerVertex is vertex2 then moveDirection is SW");
+
+
 			obstacleFuzzy.Rules.Add(rule1);
 			obstacleFuzzy.Rules.Add(rule2);
 			obstacleFuzzy.Rules.Add(rule3);
@@ -155,6 +186,16 @@ public class EnemyController : MonoBehaviour
 			obstacleFuzzy.Rules.Add(rule14);
 			obstacleFuzzy.Rules.Add(rule15);
 			obstacleFuzzy.Rules.Add(rule16);
+			obstacleFuzzy.Rules.Add(rule17);
+			obstacleFuzzy.Rules.Add(rule18);
+			obstacleFuzzy.Rules.Add(rule19);
+			obstacleFuzzy.Rules.Add(rule20);
+			obstacleFuzzy.Rules.Add(rule21);
+			obstacleFuzzy.Rules.Add(rule22);
+			obstacleFuzzy.Rules.Add(rule23);
+			obstacleFuzzy.Rules.Add(rule24);
+			obstacleFuzzy.Rules.Add(rule25);
+			obstacleFuzzy.Rules.Add(rule26);
 
 		}
 		catch (Exception ex)
@@ -208,7 +249,7 @@ public class EnemyController : MonoBehaviour
 				FuzzyVariable hearing = hearingFuzzy.InputByName("hearing");
 				FuzzyVariable moveDirection = hearingFuzzy.OutputByName("moveDirection");
 
-				//Debug.Log("Hearing: " + hearing);
+				
 
 				Dictionary<FuzzyVariable, double> input = new Dictionary<FuzzyVariable, double>();
 				input.Add(hearing, angle + 180);
@@ -218,6 +259,7 @@ public class EnemyController : MonoBehaviour
 				FuzzyVariable hearingOutput = obstacleFuzzy.InputByName("hearingOutput");
 				FuzzyVariable obstacleDistance = obstacleFuzzy.InputByName("obstacleDistance");
 				FuzzyVariable wallOrientation = obstacleFuzzy.InputByName("wallOrientation");
+				FuzzyVariable closerVertex = obstacleFuzzy.InputByName("closerVertex");
 
 				
 
@@ -234,8 +276,48 @@ public class EnemyController : MonoBehaviour
 
 				input2.Add(wallOrientation, orient);
 
+				double closer = -1;
+				if (hit.normal.x == 1)
+				{
+					if (Vector2.Distance(new Vector2(hit.collider.bounds.center.x + hit.collider.bounds.extents.x,
+						hit.collider.bounds.center.y + hit.collider.bounds.extents.y), rb.position) < Vector2.Distance(new Vector2(hit.collider.bounds.center.x + hit.collider.bounds.extents.x,
+						hit.collider.bounds.center.y - hit.collider.bounds.extents.y), rb.position))
+						closer = 0.5;
+					else
+						closer = 1.5;
+				}
+				else if (hit.normal.x == -1)
+				{
+					if (Vector2.Distance(new Vector2(hit.collider.bounds.center.x - hit.collider.bounds.extents.x,
+						hit.collider.bounds.center.y + hit.collider.bounds.extents.y), rb.position) < Vector2.Distance(new Vector2(hit.collider.bounds.center.x - hit.collider.bounds.extents.x,
+						hit.collider.bounds.center.y - hit.collider.bounds.extents.y), rb.position))
+						closer = 0.5;
+					else
+						closer = 1.5;
+				}
+
+				if (hit.normal.y == 1)
+				{
+					if (Vector2.Distance(new Vector2(hit.collider.bounds.center.x - hit.collider.bounds.extents.x,
+						hit.collider.bounds.center.y + hit.collider.bounds.extents.y), rb.position) < Vector2.Distance(new Vector2(hit.collider.bounds.center.x + hit.collider.bounds.extents.x,
+						hit.collider.bounds.center.y + hit.collider.bounds.extents.y), rb.position))
+						closer = 0.5;
+					else
+						closer = 1.5;
+				}
+				else if (hit.normal.y == -1)
+				{
+					if (Vector2.Distance(new Vector2(hit.collider.bounds.center.x - hit.collider.bounds.extents.x,
+						hit.collider.bounds.center.y - hit.collider.bounds.extents.y), rb.position) < Vector2.Distance(new Vector2(hit.collider.bounds.center.x + hit.collider.bounds.extents.x,
+						hit.collider.bounds.center.y - hit.collider.bounds.extents.y), rb.position))
+						closer = 0.5;
+					else
+						closer = 1.5;
+				}
+
+				input2.Add(closerVertex, closer);
 				
-				Debug.DrawLine(new Vector3(-10, -10), hit.normal, Color.yellow, 1f);
+				//Debug.DrawLine(new Vector3(-10, -10), hit.normal, Color.yellow, 1f);
 				Dictionary<FuzzyVariable, double> result2 = obstacleFuzzy.Calculate(input2);
 
 				Debug.Log("Movement: " + result2[output]);
@@ -299,44 +381,5 @@ public class EnemyController : MonoBehaviour
 		}
 	}
 
-	Vector3 findClosestVertex(Collider2D collider)
-	{
-		//Debug.Log(collider.bounds.size);
-		//Debug.Log(collider.bounds.center);
-		//Debug.Log(collider.bounds.extents);
-		BoxCollider2D boxCollider = rb.GetComponentInParent<BoxCollider2D>();
-		Debug.Log("BoxCollider size: " + boxCollider.size);
 
-		List<Vector2> vertexes = new List<Vector2>
-		{
-			new Vector2(collider.bounds.center.x - collider.bounds.extents.x - boxCollider.size.x,
-			collider.bounds.center.y - collider.bounds.extents.y - boxCollider.size.y),
-			new Vector2(collider.bounds.center.x - collider.bounds.extents.x - boxCollider.size.x,
-			collider.bounds.center.y + collider.bounds.extents.y + boxCollider.size.y),
-			new Vector2(collider.bounds.center.x + collider.bounds.extents.x + boxCollider.size.x,
-			collider.bounds.center.y - collider.bounds.extents.y - boxCollider.size.y),
-			new Vector2(collider.bounds.center.x + collider.bounds.extents.x,
-			collider.bounds.center.y + collider.bounds.extents.y + boxCollider.size.y),
-		};
-
-		vertexes.Sort(delegate(Vector2 x, Vector2 y)
-		{
-			if (Vector2.Distance(rb.position, x) == Vector2.Distance(rb.position, y)) return 0;
-			else if (Vector2.Distance(rb.position, x) > Vector2.Distance(rb.position, y)) return 1;
-			else if (Vector2.Distance(rb.position, x) < Vector2.Distance(rb.position, y)) return -1;
-
-			return 0;
-		});
-
-		
-		if (Vector2.Distance(rb.position, vertexes[0]) < 2)
-			return new Vector3(vertexes[1].x, vertexes[1].y);
-		else
-			return new Vector3(vertexes[0].x, vertexes[0].y);
-	}
-
-	//double checkOrientation(Collider2D collider)
-	//{
-
-	//}
 }
