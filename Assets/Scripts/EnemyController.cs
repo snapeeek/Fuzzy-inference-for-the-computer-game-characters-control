@@ -24,19 +24,23 @@ public class EnemyController : MonoBehaviour
 	{
 		hearingFuzzy = new MamdaniFuzzySystem();
 
-
 		//creating input fuzzy variables
 		FuzzyVariable hearing = new FuzzyVariable("hearing", 0.0, 360.0);
-		hearing.Terms.Add(new FuzzyTerm("south", new TriangularMembershipFunction(0.0, 0.0, 25.0)));
-		hearing.Terms.Add(new FuzzyTerm("south2", new TriangularMembershipFunction(335.0, 360.0, 360.0)));
-		hearing.Terms.Add(new FuzzyTerm("south-west", new TriangularMembershipFunction(20.0, 45.0, 70.0)));
-		hearing.Terms.Add(new FuzzyTerm("west", new TriangularMembershipFunction(65.0, 90.0, 115.0)));
-		hearing.Terms.Add(new FuzzyTerm("north-west", new TriangularMembershipFunction(110.0, 135.0, 160.0)));
-		hearing.Terms.Add(new FuzzyTerm("north", new TriangularMembershipFunction(155.0, 180.0, 205.0)));
-		hearing.Terms.Add(new FuzzyTerm("north-east", new TriangularMembershipFunction(200.0, 225.0, 250.0)));
-		hearing.Terms.Add(new FuzzyTerm("east", new TriangularMembershipFunction(245.0, 270.0, 295.0)));
-		hearing.Terms.Add(new FuzzyTerm("south-east", new TriangularMembershipFunction(290.0, 315.0, 340.0)));
+		hearing.Terms.Add(new FuzzyTerm("south", new TriangularMembershipFunction(0.0, 0.0, 45.0)));
+		hearing.Terms.Add(new FuzzyTerm("south2", new TriangularMembershipFunction(315.0, 360.0, 360.0)));
+		hearing.Terms.Add(new FuzzyTerm("south-west", new TriangularMembershipFunction(0, 45.0, 90.0)));
+		hearing.Terms.Add(new FuzzyTerm("west", new TriangularMembershipFunction(45.0, 90.0, 135.0)));
+		hearing.Terms.Add(new FuzzyTerm("north-west", new TriangularMembershipFunction(90.0, 135.0, 180.0)));
+		hearing.Terms.Add(new FuzzyTerm("north", new TriangularMembershipFunction(135.0, 180.0, 225.0)));
+		hearing.Terms.Add(new FuzzyTerm("north-east", new TriangularMembershipFunction(180.0, 225.0, 270.0)));
+		hearing.Terms.Add(new FuzzyTerm("east", new TriangularMembershipFunction(225.0, 270.0, 315.0)));
+		hearing.Terms.Add(new FuzzyTerm("south-east", new TriangularMembershipFunction(270.0, 315.0, 360.0)));
 		hearingFuzzy.Input.Add(hearing);
+
+		foreach (var term in hearing.Terms)
+		{
+			Debug.Log(term.Name + " " +  term.MembershipFunction);
+		}
 
 
 		//FuzzyVariable obstacle = new FuzzyVariable("obstacle", 0.0, )
@@ -58,31 +62,53 @@ public class EnemyController : MonoBehaviour
 		//creating fuzzy rules
 		try
 		{
-			MamdaniFuzzyRule rule1 = hearingFuzzy.ParseRule("if (hearing is south) then moveDirection is S");
-			MamdaniFuzzyRule rule12 = hearingFuzzy.ParseRule("if (hearing is south2) then moveDirection is S");
-			MamdaniFuzzyRule rule2 = hearingFuzzy.ParseRule("if (hearing is south-west) then moveDirection is SW");
-			MamdaniFuzzyRule rule3 = hearingFuzzy.ParseRule("if (hearing is west) then moveDirection is W");
-			MamdaniFuzzyRule rule4 = hearingFuzzy.ParseRule("if (hearing is north-west) then moveDirection is NW");
-			MamdaniFuzzyRule rule5 = hearingFuzzy.ParseRule("if (hearing is north) then moveDirection is N");
-			MamdaniFuzzyRule rule6 = hearingFuzzy.ParseRule("if (hearing is north-east) then moveDirection is NE");
-			MamdaniFuzzyRule rule7 = hearingFuzzy.ParseRule("if (hearing is east) then moveDirection is E");
-			MamdaniFuzzyRule rule8 = hearingFuzzy.ParseRule("if (hearing is south-east) then moveDirection is SE");
+			MamdaniFuzzyRule rule1 = hearingFuzzy.ParseRule("if (hearing is south) then (moveDirection is S)");
+			MamdaniFuzzyRule rule12 = hearingFuzzy.ParseRule("if (hearing is south2) then (moveDirection is S)");
+			MamdaniFuzzyRule rule2 = hearingFuzzy.ParseRule("if (hearing is south-west) then (moveDirection is SW)");
+			MamdaniFuzzyRule rule22 = hearingFuzzy.ParseRule("if (hearing is south-west) then (moveDirection is S)");
+			MamdaniFuzzyRule rule23 = hearingFuzzy.ParseRule("if (hearing is south-west) then (moveDirection is W)");
+			MamdaniFuzzyRule rule3 = hearingFuzzy.ParseRule("if (hearing is west) then (moveDirection is W)");
+			MamdaniFuzzyRule rule4 = hearingFuzzy.ParseRule("if (hearing is north-west) then (moveDirection is NW)");
+			MamdaniFuzzyRule rule42 = hearingFuzzy.ParseRule("if (hearing is north-west) then (moveDirection is N)");
+			MamdaniFuzzyRule rule43 = hearingFuzzy.ParseRule("if (hearing is north-west) then (moveDirection is W)");
+			MamdaniFuzzyRule rule5 = hearingFuzzy.ParseRule("if (hearing is north) then (moveDirection is N)");
+			MamdaniFuzzyRule rule6 = hearingFuzzy.ParseRule("if (hearing is north-east) then (moveDirection is NE)");
+			MamdaniFuzzyRule rule62 = hearingFuzzy.ParseRule("if (hearing is north-east) then (moveDirection is N)");
+			MamdaniFuzzyRule rule63 = hearingFuzzy.ParseRule("if (hearing is north-east) then (moveDirection is E)");
+			MamdaniFuzzyRule rule7 = hearingFuzzy.ParseRule("if (hearing is east) then (moveDirection is E)");
+			MamdaniFuzzyRule rule8 = hearingFuzzy.ParseRule("if (hearing is south-east) then (moveDirection is SE)");
+			MamdaniFuzzyRule rule82 = hearingFuzzy.ParseRule("if (hearing is south-east) then (moveDirection is S)");
+			MamdaniFuzzyRule rule83 = hearingFuzzy.ParseRule("if (hearing is south-east) then (moveDirection is E)");
 
 			hearingFuzzy.Rules.Add(rule1);
 			hearingFuzzy.Rules.Add(rule12);
 			hearingFuzzy.Rules.Add(rule2);
+			hearingFuzzy.Rules.Add(rule22);
+			hearingFuzzy.Rules.Add(rule23);
 			hearingFuzzy.Rules.Add(rule3);
 			hearingFuzzy.Rules.Add(rule4);
+			hearingFuzzy.Rules.Add(rule42);
+			hearingFuzzy.Rules.Add(rule43);
 			hearingFuzzy.Rules.Add(rule5);
 			hearingFuzzy.Rules.Add(rule6);
+			hearingFuzzy.Rules.Add(rule62);
+			hearingFuzzy.Rules.Add(rule63);
 			hearingFuzzy.Rules.Add(rule7);
 			hearingFuzzy.Rules.Add(rule8);
+			hearingFuzzy.Rules.Add(rule82);
+			hearingFuzzy.Rules.Add(rule83);
 
 		}
 		catch(Exception ex)
 		{
 			Debug.Log(string.Format("Parsing exception: {0}", ex.Message));
 		}
+
+		foreach (var rule in hearingFuzzy.Rules)
+		{
+			Debug.Log(rule.Condition + " " + rule.Conclusion);
+		}
+
 
 
 		obstacleFuzzy = new MamdaniFuzzySystem();
@@ -99,9 +125,9 @@ public class EnemyController : MonoBehaviour
 
 
 		FuzzyVariable obstacleDistance = new FuzzyVariable("obstacleDistance", 0.0, maxObstacleDistance);
-		obstacleDistance.Terms.Add(new FuzzyTerm("close", new TrapezoidMembershipFunction(0.0, 0.0, 1.0, 2.0)));
-		obstacleDistance.Terms.Add(new FuzzyTerm("medium", new TriangularMembershipFunction(1.5, 4.0, 6.5)));
-		obstacleDistance.Terms.Add(new FuzzyTerm("far", new TrapezoidMembershipFunction(6.0, 10.0, maxObstacleDistance, maxObstacleDistance)));
+		obstacleDistance.Terms.Add(new FuzzyTerm("close", new TrapezoidMembershipFunction(0.0, 0.0, 1.0, 3.0)));
+		obstacleDistance.Terms.Add(new FuzzyTerm("medium", new TriangularMembershipFunction(1.0, 4.0, 6.5)));
+		obstacleDistance.Terms.Add(new FuzzyTerm("far", new TrapezoidMembershipFunction(4.0, 10.0, maxObstacleDistance, maxObstacleDistance)));
 		obstacleFuzzy.Input.Add(obstacleDistance);
 
 		FuzzyVariable wallOrientation = new FuzzyVariable("wallOrientation", 0.0, 2.0);
@@ -252,9 +278,13 @@ public class EnemyController : MonoBehaviour
 				
 
 				Dictionary<FuzzyVariable, double> input = new Dictionary<FuzzyVariable, double>();
-				input.Add(hearing, angle + 180);
+				input.Add(hearing, (angle + 180));
+				Debug.Log("Kurwo pokazuj: " + input[hearing]);
 				Dictionary<FuzzyVariable, double> result = hearingFuzzy.Calculate(input);
 
+				//Debug.Log(result[moveDirection]);
+				
+				//Debug.Log(angle + 180);
 
 				FuzzyVariable hearingOutput = obstacleFuzzy.InputByName("hearingOutput");
 				FuzzyVariable obstacleDistance = obstacleFuzzy.InputByName("obstacleDistance");
@@ -320,8 +350,11 @@ public class EnemyController : MonoBehaviour
 				//Debug.DrawLine(new Vector3(-10, -10), hit.normal, Color.yellow, 1f);
 				Dictionary<FuzzyVariable, double> result2 = obstacleFuzzy.Calculate(input2);
 
-				Debug.Log("Movement: " + result2[output]);
-				decideMovement(result2[output]);
+				System.Random randomize = new System.Random();
+				double randomElement = (double)randomize.Next(90, 110) / 100;
+
+				//Debug.Log("Movement: " + result2[output]);
+				decideMovement(result2[output] * randomElement);
 			}
 		}
 
