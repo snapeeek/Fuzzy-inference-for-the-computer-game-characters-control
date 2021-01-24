@@ -10,9 +10,8 @@ public class EnemyController : MonoBehaviour
 	public float moveSpeed = 3f;
 	public Rigidbody2D rb;
 	public Rigidbody2D player;
-	public float hearingRadius = 25f;
-	//public float seeingRadius = 25f;
-	MamdaniFuzzySystem hearingFuzzy, obstacleFuzzy;
+	public float seeingRadius = 25f;
+	MamdaniFuzzySystem obstacleFuzzy;
 	public double maxObstacleDistance = 35.0;
 	double angle;
 
@@ -26,15 +25,15 @@ public class EnemyController : MonoBehaviour
 
 		//creating input fuzzy variables
 		FuzzyVariable hearing = new FuzzyVariable("hearing", 0.0, 360.0);
-		hearing.Terms.Add(new FuzzyTerm("south", new TriangularMembershipFunction(0.0, 0.0, 35.0)));
-		hearing.Terms.Add(new FuzzyTerm("south_west", new TriangularMembershipFunction(10.0, 45.0, 80.0)));
-		hearing.Terms.Add(new FuzzyTerm("west", new TriangularMembershipFunction(55.0, 90.0, 125.0)));
-		hearing.Terms.Add(new FuzzyTerm("north_west", new TriangularMembershipFunction(100.0, 135.0, 170.0)));
-		hearing.Terms.Add(new FuzzyTerm("north", new TriangularMembershipFunction(145.0, 180.0, 215.0)));
-		hearing.Terms.Add(new FuzzyTerm("north_east", new TriangularMembershipFunction(190.0, 225.0, 260.0)));
-		hearing.Terms.Add(new FuzzyTerm("east", new TriangularMembershipFunction(235.0, 270.0, 305.0)));
-		hearing.Terms.Add(new FuzzyTerm("south_east", new TriangularMembershipFunction(280.0, 315.0, 350.0)));
-		hearing.Terms.Add(new FuzzyTerm("south2", new TriangularMembershipFunction(325.0, 360.0, 360.0)));
+		hearing.Terms.Add(new FuzzyTerm("south", new TriangularMembershipFunction(0.0, 0.0, 30.0)));
+		hearing.Terms.Add(new FuzzyTerm("south_west", new TriangularMembershipFunction(15.0, 45.0, 75.0)));
+		hearing.Terms.Add(new FuzzyTerm("west", new TriangularMembershipFunction(60.0, 90.0, 120.0)));
+		hearing.Terms.Add(new FuzzyTerm("north_west", new TriangularMembershipFunction(105.0, 135.0, 165.0)));
+		hearing.Terms.Add(new FuzzyTerm("north", new TriangularMembershipFunction(150.0, 180.0, 210.0)));
+		hearing.Terms.Add(new FuzzyTerm("north_east", new TriangularMembershipFunction(195.0, 225.0, 255.0)));
+		hearing.Terms.Add(new FuzzyTerm("east", new TriangularMembershipFunction(240.0, 270.0, 300.0)));
+		hearing.Terms.Add(new FuzzyTerm("south_east", new TriangularMembershipFunction(285.0, 315.0, 345.0)));
+		hearing.Terms.Add(new FuzzyTerm("south2", new TriangularMembershipFunction(330.0, 360.0, 360.0)));
 		obstacleFuzzy.Input.Add(hearing);
 
 
@@ -56,20 +55,22 @@ public class EnemyController : MonoBehaviour
 
 		//creating output variables
 		FuzzyVariable outputDir = new FuzzyVariable("moveDirection", 0.0, 8.0);
-		outputDir.Terms.Add(new FuzzyTerm("S", new TriangularMembershipFunction(0.0, 0.5, 1.0)));
-		outputDir.Terms.Add(new FuzzyTerm("SW", new TriangularMembershipFunction(1.0, 1.5, 2.0)));
-		outputDir.Terms.Add(new FuzzyTerm("W", new TriangularMembershipFunction(2.0, 2.5, 3.0)));
-		outputDir.Terms.Add(new FuzzyTerm("NW", new TriangularMembershipFunction(3.0, 3.5, 4.0)));
-		outputDir.Terms.Add(new FuzzyTerm("N", new TriangularMembershipFunction(4.0, 4.5, 5.0)));
-		outputDir.Terms.Add(new FuzzyTerm("NE", new TriangularMembershipFunction(5.0, 5.5, 6.0)));
-		outputDir.Terms.Add(new FuzzyTerm("E", new TriangularMembershipFunction(6.0, 6.5, 7.0)));
-		outputDir.Terms.Add(new FuzzyTerm("SE", new TriangularMembershipFunction(7.0, 7.5, 8.0)));
+		outputDir.Terms.Add(new FuzzyTerm("S", new TriangularMembershipFunction(0.0, 0.0, 1.0)));
+		outputDir.Terms.Add(new FuzzyTerm("SW", new TriangularMembershipFunction(0.0, 1.0, 2.0)));
+		outputDir.Terms.Add(new FuzzyTerm("W", new TriangularMembershipFunction(1.0, 2.0, 3.0)));
+		outputDir.Terms.Add(new FuzzyTerm("NW", new TriangularMembershipFunction(2.0, 3.0, 4.0)));
+		outputDir.Terms.Add(new FuzzyTerm("N", new TriangularMembershipFunction(3.0, 4.0, 5.0)));
+		outputDir.Terms.Add(new FuzzyTerm("NE", new TriangularMembershipFunction(4.0, 5.0, 6.0)));
+		outputDir.Terms.Add(new FuzzyTerm("E", new TriangularMembershipFunction(5.0, 6.0, 7.0)));
+		outputDir.Terms.Add(new FuzzyTerm("SE", new TriangularMembershipFunction(6.0, 7.0, 8.0)));
+		outputDir.Terms.Add(new FuzzyTerm("S2", new TriangularMembershipFunction(7.0, 8.0, 8.0)));
 
 		obstacleFuzzy.Output.Add(outputDir);
 
 		try
 		{
-			MamdaniFuzzyRule rule1 = obstacleFuzzy.ParseRule("if ((hearing is south) or (hearing is south2)) and (obstacleDistance is far) then moveDirection is S");
+			MamdaniFuzzyRule rule1 = obstacleFuzzy.ParseRule("if (hearing is south) and (obstacleDistance is far) then moveDirection is S");
+			MamdaniFuzzyRule rule122 = obstacleFuzzy.ParseRule("if (hearing is south2) and (obstacleDistance is far) then moveDirection is S2");
 			MamdaniFuzzyRule rule2 = obstacleFuzzy.ParseRule("if (hearing is south_west) and ((obstacleDistance is far) or (obstacleDistance is medium)) then moveDirection is SW");
 			MamdaniFuzzyRule rule3 = obstacleFuzzy.ParseRule("if (hearing is west) and (obstacleDistance is far) then moveDirection is W");
 			MamdaniFuzzyRule rule4 = obstacleFuzzy.ParseRule("if (hearing is north_west) and ((obstacleDistance is far) or (obstacleDistance is medium)) then moveDirection is NW");
@@ -93,21 +94,23 @@ public class EnemyController : MonoBehaviour
 			MamdaniFuzzyRule rule15 = obstacleFuzzy.ParseRule(
 				"if (hearing is south_east) and (obstacleDistance is close) and wallOrientation is horizontal then moveDirection is E");
 			MamdaniFuzzyRule rule16 = obstacleFuzzy.ParseRule(
-				"if (hearing is south_east) and (obstacleDistance is close) and wallOrientation is vertical then moveDirection is S");
+				"if (hearing is south_east) and (obstacleDistance is close) and wallOrientation is vertical then moveDirection is S2");
 
 			MamdaniFuzzyRule rule17 = obstacleFuzzy.ParseRule(
-				"if ((hearing is south) or (hearing is south2) or (hearing is north)) and (obstacleDistance is close) and closerVertex is vertex1 then moveDirection is W");
+				"if (((hearing is south) or (hearing is south2)) or (hearing is north)) and (obstacleDistance is close) and closerVertex is vertex1 then moveDirection is W");
 			MamdaniFuzzyRule rule18 = obstacleFuzzy.ParseRule(
-				"if ((hearing is south) or (hearing is south2) or (hearing is north)) and (obstacleDistance is close) and closerVertex is vertex2 then moveDirection is E");
+				"if (((hearing is south) or (hearing is south2)) or (hearing is north)) and (obstacleDistance is close) and closerVertex is vertex2 then moveDirection is E");
 			MamdaniFuzzyRule rule19 = obstacleFuzzy.ParseRule(
 				"if ((hearing is west) or (hearing is east)) and (obstacleDistance is close) and closerVertex is vertex1 then moveDirection is N");
 			MamdaniFuzzyRule rule20 = obstacleFuzzy.ParseRule(
 				"if ((hearing is west) or (hearing is east)) and (obstacleDistance is close) and closerVertex is vertex2 then moveDirection is S");
+			MamdaniFuzzyRule rule202 = obstacleFuzzy.ParseRule(
+				"if ((hearing is west) or (hearing is east)) and (obstacleDistance is close) and closerVertex is vertex2 then moveDirection is S2");
 
 			MamdaniFuzzyRule rule21 = obstacleFuzzy.ParseRule(
-				"if ((hearing is south) or (hearing is south2) or (hearing is west)) and (obstacleDistance is medium) and closerVertex is vertex1 then moveDirection is SW");
+				"if (((hearing is south) or (hearing is south2)) or (hearing is west)) and (obstacleDistance is medium) and closerVertex is vertex1 then moveDirection is SW");
 			MamdaniFuzzyRule rule22 = obstacleFuzzy.ParseRule(
-				"if ((hearing is south) or (hearing is south2) or (hearing is east)) and (obstacleDistance is medium) and closerVertex is vertex2 then moveDirection is SE");
+				"if (((hearing is south) or (hearing is south2)) or (hearing is east)) and (obstacleDistance is medium) and closerVertex is vertex2 then moveDirection is SE");
 
 			MamdaniFuzzyRule rule23 = obstacleFuzzy.ParseRule(
 				"if ((hearing is north) or (hearing is west)) and (obstacleDistance is medium) and closerVertex is vertex1 then moveDirection is NW");
@@ -122,6 +125,7 @@ public class EnemyController : MonoBehaviour
 
 
 			obstacleFuzzy.Rules.Add(rule1);
+			obstacleFuzzy.Rules.Add(rule122);
 			obstacleFuzzy.Rules.Add(rule2);
 			obstacleFuzzy.Rules.Add(rule3);
 			obstacleFuzzy.Rules.Add(rule4);
@@ -141,6 +145,7 @@ public class EnemyController : MonoBehaviour
 			obstacleFuzzy.Rules.Add(rule18);
 			obstacleFuzzy.Rules.Add(rule19);
 			obstacleFuzzy.Rules.Add(rule20);
+			obstacleFuzzy.Rules.Add(rule202);
 			obstacleFuzzy.Rules.Add(rule21);
 			obstacleFuzzy.Rules.Add(rule22);
 			obstacleFuzzy.Rules.Add(rule23);
@@ -177,10 +182,13 @@ public class EnemyController : MonoBehaviour
 		movement.x = movement.y = 0;
 		float distance = Vector3.Distance(rb.position, player.position);
 		Vector3 targetDir = player.position - rb.position;
+
 		angle = (double)Vector3.SignedAngle(targetDir, new Vector3(0, 1), new Vector3(0, 0, 1));
 
 		var rayDirection = player.transform.position - rb.transform.position;
 		RaycastHit2D hit = Physics2D.Raycast(rb.transform.position, rayDirection, Mathf.Infinity);
+		
+		Debug.DrawRay(rb.transform.position, rayDirection,  Color.white, 0.5f, false);
 		if (hit.transform == player.transform)
 		{
 			if (rayDirection.x < 0)
@@ -276,49 +284,49 @@ public class EnemyController : MonoBehaviour
 
 	void decideMovement(double input)
 	{
-		if (input > 0 && input < 1)
+		if ((input > 0 && input < 0.5) || (input > 7.5 && input < 8.0))
 		{
 			movement.x = 0;
 			movement.y = -1;
 			//Debug.Log("S");
 		}
-		else if (input > 1 && input < 2)
+		else if (input > 0.5 && input < 1.5)
 		{
 			movement.x = -1;
 			movement.y = -1;
 			//Debug.Log("SW");
 		}
-		else if (input > 2 && input < 3)
+		else if (input > 1.5 && input < 2.5)
 		{
 			movement.x = -1;
 			movement.y = 0;
 			//Debug.Log("W");
 		}
-		else if (input > 3 && input < 4)
+		else if (input > 2.5 && input < 3.5)
 		{
 			movement.x = -1;
 			movement.y = 1;
 			//Debug.Log("NW");
 		}
-		else if (input > 4 && input < 5)
+		else if (input > 3.5 && input < 4.5)
 		{
 			movement.x = 0;
 			movement.y = 1;
 			//Debug.Log("N");
 		}
-		else if (input > 5 && input < 6)
+		else if (input > 4.5 && input < 5.5)
 		{
 			movement.x = 1;
 			movement.y = 1;
 			//Debug.Log("NE");
 		}
-		else if (input > 6 && input < 7)
+		else if (input > 5.5 && input < 6.5)
 		{
 			movement.x = 1;
 			movement.y = 0;
 			//Debug.Log("E");
 		}
-		else if (input > 7 && input < 8)
+		else if (input > 6.5 && input < 7.5)
 		{
 			movement.x = 1;
 			movement.y = -1;
